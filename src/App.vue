@@ -1,64 +1,68 @@
 <template>
-  <div id="app">
-    <img class="logo" src="./assets/logo.png">
-    <hello></hello>
-    <p>
-      Welcome to your Vue.js app!
-    </p>
-    <p>
-      To get a better understanding of how this boilerplate works, check out
-      <a href="http://vuejs-templates.github.io/webpack" target="_blank">its documentation</a>.
-      It is also recommended to go through the docs for
-      <a href="http://webpack.github.io/" target="_blank">Webpack</a> and
-      <a href="http://vuejs.github.io/vue-loader/" target="_blank">vue-loader</a>.
-      If you have any issues with the setup, please file an issue at this boilerplate's
-      <a href="https://github.com/vuejs-templates/webpack" target="_blank">repository</a>.
-    </p>
-    <p>
-      You may also want to checkout
-      <a href="https://github.com/vuejs/vue-router/" target="_blank">vue-router</a> for routing and
-      <a href="https://github.com/vuejs/vuex/" target="_blank">vuex</a> for state management.
-    </p>
+  <div>
+    <!-- pass data to component with props -->
+    <v-header :seller="seller"></v-header>
+    <div class="tab">
+        <div class="tab-item"><a href="#" v-link="{path:'/goods'}">商品</a></div>
+        <div class="tab-item"><a href="#" v-link="{path:'/ratings'}">评价</a></div>
+        <div class="tab-item"><a href="#" v-link="{path:'/seller'}">商家</a></div>
+    </div>
+    <router-view></router-view>
   </div>
 </template>
 
-<script>
-import Hello from './components/Hello'
+<script type="text/javascript">
+import vHeader from './components/header/header'
+
+// define ok status const
+const ERR_OK = 0
 
 export default {
+  data () {
+    return {
+      seller: {}
+    }
+  },
+  created () {
+    // send request
+    this.$http.get('/api/seller').then((res) => {
+      res = res.body // get body
+      console.log(res.data)
+
+      if (res.errno === ERR_OK) {
+        this.seller = res.data
+      }
+    })
+  },
   components: {
-    Hello
+    vHeader
   }
 }
 </script>
 
-<style>
-html {
-  height: 100%;
-}
+<style lang="scss">
+@import url('./common/sass/index.scss');
 
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
+  .tab {
+        display: flex;
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+    }
+    .tab-item{
+        background: white;
+        text-align: center;
+        flex: 1;
+        border-bottom: 1px solid gray;
+    }
 
-#app {
-  color: #2c3e50;
-  margin-top: -100px;
-  max-width: 600px;
-  font-family: Source Sans Pro, Helvetica, sans-serif;
-  text-align: center;
-}
+    .tab-item a{
+        display: block;
+        color:red;
+    }
 
-#app a {
-  color: #42b983;
-  text-decoration: none;
-}
-
-.logo {
-  width: 100px;
-  height: 100px
-}
+    .tab-item .active{
+        color:yellow;
+        background: green;
+    }
 </style>
